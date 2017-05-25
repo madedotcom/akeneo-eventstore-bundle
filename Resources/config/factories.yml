@@ -1,0 +1,9 @@
+services:
+    made_event_store.event.factory:
+        class: Made\Bundle\EventStoreBundle\Factory\EventStoreEventFactory
+        arguments:
+            - '@pim_versioning.manager.version'
+            - '@service_container'
+
+    made_event_store_factory:
+        alias: made_event_store.event.factory

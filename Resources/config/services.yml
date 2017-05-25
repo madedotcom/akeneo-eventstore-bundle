@@ -1,0 +1,21 @@
+services:
+    made_event_store.writer:
+        class: Made\Bundle\EventStoreBundle\Services\EventStoreWriter
+        arguments:
+            - "%eventstore_host%"
+            - '@doctrine.orm.entity_manager'
+        calls:
+            - [setLogger, ['@monolog.logger.eventstore']]
+            - [setValidator,['@made_filters.validator']]
+
+    made_event_store.event.factory:
+        class: Made\Bundle\EventStoreBundle\Factory\EventStoreEventFactory
+        arguments:
+            - '@pim_versioning.manager.version'
+            - '@service_container'
+
+    event_store_factory:
+        alias: made_event_store.event.factory
+
+    made_event_store.event.dummyvalidator:
+            class: Made\Bundle\EventStoreBundle\Services\DummyValidator
