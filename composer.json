@@ -1,5 +1,5 @@
 {
-    "name": "made/eventstore-bundle",
+    "name": "madedotcom/eventstore-bundle",
     "type": "symfony-bundle",
     "description": "Made EventStore Bundle",
     "keywords": ["Made", "EventStore", "Events"],
