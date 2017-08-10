@@ -17,6 +17,17 @@ You can install and use this bundle only together with:
  
 ### Installation
 
+##### Update repositories in composer.json
+```
+"repositories": [
+        ...
+        {
+            "type": "vcs",
+            "url": "https://github.com/madedotcom/akeneo-eventstore-bundle"
+        }
+    ]
+```
+
 ##### Require the bundle with composer
 ```bash
 composer require "made/eventstore-bundle"
