@@ -19,7 +19,7 @@ You can install and use this bundle only together with:
 
 ##### Require the bundle with composer
 ```bash
-composer require @TODO complete the repo here
+composer require "made/eventstore-bundle"
 ```
 
 ##### Include in AppKernel.php
