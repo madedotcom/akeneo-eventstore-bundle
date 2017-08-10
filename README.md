@@ -1,6 +1,5 @@
 Made Event Store Bundle
 ===========================
-
 The EventStoreBundle for PIM project is meant to create a connection between PIM and external applications through the 
 open-source EventStore database.
 
@@ -12,24 +11,25 @@ every event will be formatted to ease the connection with Magento consumers.
 
 ### Requirements
 You can install and use this bundle only together with:
-  - PIMEE version 1.6.*
+  - PIM CE/EE version 1.6.*
   - InnerVariationBundle
  
 ### Installation
+
 ##### Update repositories in composer.json
 ```
 "repositories": [
-        ...
-        {
-            "type": "vcs",
-            "url": "https://github.com/madedotcom/akeneo-eventstore-bundle"
-        }
-    ]
+    ...
+    {
+        "type": "vcs",
+        "url": "https://github.com/madedotcom/akeneo-eventstore-bundle"
+    }
+]
 ```
 
 ##### Require the bundle with composer
 ```bash
-composer require "made/eventstore-bundle:1.*"
+composer require "madedotcom/eventstore-bundle:1.*"
 ```
 
 ##### Include in AppKernel.php
