@@ -64,7 +64,7 @@ abstract class AbstractProductChangedNotifier implements NotifyEventStoreInterfa
      */
     public function isParent($product)
     {
-        return isset($product[ParentProductType::ATTRIBUTE_PARENT_CODE][0]['data']);
+        return !isset($product[ParentProductType::ATTRIBUTE_PARENT_CODE]);
     }
 
     /**

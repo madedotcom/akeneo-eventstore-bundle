@@ -12,14 +12,14 @@ every event will be formatted to ease the connection with Magento consumers.
 
 ### Requirements
 You can install and use this bundle only together with:
-  - PIMEE version 
+  - PIMEE version 1.7
   - InnerVariationBundle
  
 ### Installation
 
 ##### Require the bundle with composer
 ```bash
-composer require "made/eventstore-bundle"
+composer require @TODO complete the repo here
 ```
 
 ##### Include in AppKernel.php

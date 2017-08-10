@@ -14,7 +14,7 @@
     "phpspec/phpspec": "2.1.*"
   },
   "autoload": {
-    "psr-4": { "Made\\Bundle\\EventStoreBundle\\": "" }
+    "psr-4": { "Made\\Bundle\\EventStoreBundle": "" }
   },
   "config": {
     "bin-dir": "bin"
