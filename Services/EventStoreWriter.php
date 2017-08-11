@@ -2,9 +2,9 @@
 
 namespace Made\Bundle\EventStoreBundle\Services;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Made\Bundle\EventStoreBundle\Entity\EventLog;
-use Made\Bundle\EventStoreBundle\Entity\EventLogRepository;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -25,21 +25,19 @@ class EventStoreWriter implements EventStoreWriterInterface
     /** @var string */
     private $stream;
 
-    /** @var Logger */
+    /** @var LoggerInterface */
     private $logger;
 
     private $validator;
 
-    /**
-     * @var EntityManager
-     */
+    /** @var EntityManagerInterface */
     private $doctrineManager;
 
     /**
-     * @param string        $eventStoreHost
-     * @param EntityManager $doctrineManager
+     * @param string                 $eventStoreHost
+     * @param EntityManagerInterface $doctrineManager
      */
-    public function __construct($eventStoreHost, $doctrineManager)
+    public function __construct($eventStoreHost, EntityManagerInterface $doctrineManager)
     {
         $this->eventStoreHost = $eventStoreHost;
         $this->doctrineManager = $doctrineManager;
@@ -53,22 +51,24 @@ class EventStoreWriter implements EventStoreWriterInterface
     {
         $this->validator = $validator;
     }
+
     /**
      * @param string $stream
+     *
      * @return $this
      */
     public function useStream($stream = 'pim-notifications')
     {
         $this->stream = $stream;
-
         $this->url = sprintf('%s/%s', trim($this->eventStoreHost, '/'), $this->stream);
 
         return $this;
     }
 
     /**
-     * @param string $data
+     * @param mixed  $data
      * @param string $eventType
+     *
      * @return mixed|void
      * @throws \Exception
      */
@@ -76,6 +76,10 @@ class EventStoreWriter implements EventStoreWriterInterface
     {
         if (!$this->url) {
             throw new \Exception('Unable to find the stream where you what to write the event.');
+        }
+
+        if (!$data) { // prevent sending empty events
+            return;
         }
 
         $json = $this->buildEvent($data, $eventType);
@@ -111,31 +115,32 @@ class EventStoreWriter implements EventStoreWriterInterface
             }
             $error = curl_error($handler);
             $log->setError($error);
-            $this->logger->addError(sprintf('Event could not be send to eventstore because: %s', $error));
-            $this->logger->addError(sprintf('Event failed: %s', $json));
+            $this->logger->error(sprintf('Event could not be send to eventstore because: %s', $error));
+            $this->logger->error(sprintf('Event failed: %s', $json));
         }
 
         $log->setResponse($response);
         curl_close($handler);
         $this->doctrineManager->persist($log);
         $this->doctrineManager->flush();
-
-        return;
     }
 
     /**
-     * @param Logger $logger
+     * @param LoggerInterface $logger
      *
-     * @return Logger
+     * @return $this
      */
-    public function setLogger(Logger $logger)
+    public function setLogger(LoggerInterface $logger)
     {
-        return $this->logger = $logger;
+        $this->logger = $logger;
+
+        return $this;
     }
 
     /**
-     * @param string $data
+     * @param mixed  $data
      * @param string $eventType
+     *
      * @return string
      */
     private function buildEvent($data, $eventType)
