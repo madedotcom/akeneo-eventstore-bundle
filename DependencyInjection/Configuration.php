@@ -1,6 +1,6 @@
 <?php
 
-namespace Made\Bundle\EventStoreBundle\DependencyInjection;
+namespace Madedotcom\Bundle\EventStoreBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -18,46 +18,14 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('made_event_store');
+        $rootNode = $treeBuilder->root('madedotcom_event_store');
 
         $rootNode
             ->children()
                 ->scalarNode('eventstore_host')
-                    ->defaultValue('http://made-eventstore')
+                    ->defaultValue(null)
                 ->end()
             ->end()
-
-            ->children()
-                ->scalarNode('eventstore_product_stream_prefix')
-                    ->defaultValue('pim_product')
-                ->end()
-            ->end()
-
-            ->children()
-                ->scalarNode('eventstore_asset_stream_prefix')
-                    ->defaultValue('pim_asset')
-                 ->end()
-            ->end()
-
-            ->children()
-                ->scalarNode('eventstore_attributes_stream_prefix')
-                    ->defaultValue('pim_attributes')
-                ->end()
-            ->end()
-
-            ->children()
-                ->scalarNode('eventstore_notifications_stream_prefix')
-                    ->defaultValue('pim_notifications')
-                ->end()
-            ->end()
-
-
-            ->children()
-                ->scalarNode('eventstore_assets_base_url')
-                    ->defaultValue('')
-                ->end()
-            ->end()
-
         ;
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

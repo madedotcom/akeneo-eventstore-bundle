@@ -1,20 +1,12 @@
 services:
-    made_event_store.writer:
-        class: Made\Bundle\EventStoreBundle\Services\EventStoreWriter
+    madedotcom.event_store.schema_validator:
+        class: Madedotcom\Bundle\EventStoreBundle\Services\SchemaValidator\SchemaValidator
         arguments:
-            - "%eventstore_host%"
-            - '@doctrine.orm.entity_manager'
-        calls:
-            - [setLogger, ['@monolog.logger.eventstore']]
+            - '@hades.json_schema.validator'
 
-    made_event_store.event.factory:
-        class: Made\Bundle\EventStoreBundle\Factory\EventStoreEventFactory
+    madedotcom.event_store.writer:
+        class: Madedotcom\Bundle\EventStoreBundle\Services\EventStoreWriter
         arguments:
-            - '@pim_versioning.manager.version'
-            - '@service_container'
-
-    event_store_factory:
-        alias: made_event_store.event.factory
-
-    made_event_store.event.dummyvalidator:
-            class: Made\Bundle\EventStoreBundle\Services\DummyValidator
+            - '@madedotcom.event_store.schema_validator'
+            - '@event_dispatcher'
+            - '%eventstore_host%'

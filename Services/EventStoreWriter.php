@@ -1,66 +1,57 @@
 <?php
 
-namespace Made\Bundle\EventStoreBundle\Services;
+namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Made\Bundle\EventStoreBundle\Entity\EventLog;
-use Psr\Log\LoggerInterface;
+use Madedotcom\Bundle\EventStoreBundle\Events\WriteEventCompleted;
+use Madedotcom\Bundle\EventStoreBundle\EventStoreEvents;
+use Madedotcom\Bundle\EventStoreBundle\Services\SchemaValidator\SchemaValidatorInterface;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class EventStoreWriter
  *
  * @package Made\Bundle\EventStoreBundle\Services
- * @author    Iulian Popa <iulian.popa@made.com>
- * @copyright 2016 Made.com (http://www.made.com)
  */
 class EventStoreWriter implements EventStoreWriterInterface
 {
+    /** @var SchemaValidatorInterface */
+    private $validator;
+
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     /** @var string */
     private $eventStoreHost;
 
     /** @var string */
     private $url;
 
-    /** @var string */
-    private $stream;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    private $validator;
-
-    /** @var EntityManagerInterface */
-    private $doctrineManager;
-
     /**
-     * @param string                 $eventStoreHost
-     * @param EntityManagerInterface $doctrineManager
+     * @param SchemaValidatorInterface $validator
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param string                   $eventStoreHost
      */
-    public function __construct($eventStoreHost, EntityManagerInterface $doctrineManager)
-    {
-        $this->eventStoreHost = $eventStoreHost;
-        $this->doctrineManager = $doctrineManager;
-        $this->validator = new DummyValidator();
-    }
-
-    /**
-     * @param object $validator
-     */
-    public function setValidator($validator)
-    {
+    public function __construct(
+        SchemaValidatorInterface $validator,
+        EventDispatcherInterface $eventDispatcher,
+        $eventStoreHost
+    ) {
         $this->validator = $validator;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->eventStoreHost = $eventStoreHost;
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @param string $stream
      *
      * @return $this
      */
-    public function useStream($stream = 'pim-notifications')
+    public function useStream($stream)
     {
-        $this->stream = $stream;
-        $this->url = sprintf('%s/%s', trim($this->eventStoreHost, '/'), $this->stream);
+        $this->url = $this->getStreamUrl($stream);
 
         return $this;
     }
@@ -68,13 +59,14 @@ class EventStoreWriter implements EventStoreWriterInterface
     /**
      * @param mixed  $data
      * @param string $eventType
+     * @param null   $stream
      *
      * @return mixed|void
      * @throws \Exception
      */
-    public function writeEvent($data, $eventType)
+    public function writeEvent($data, $eventType, $stream = null)
     {
-        if (!$this->url) {
+        if (!$this->url && !$stream) {
             throw new \Exception('Unable to find the stream where you what to write the event.');
         }
 
@@ -82,11 +74,14 @@ class EventStoreWriter implements EventStoreWriterInterface
             return;
         }
 
+        $url = $this->url ?: $this->getStreamUrl($stream);
         $json = $this->buildEvent($data, $eventType);
 
-        $this->validator->validate($json, $eventType);
-        $handler = curl_init($this->url);
+        if (!$this->validator->isValid($json, $eventType)) {
+            return; # todo
+        }
 
+        $handler = curl_init($url);
         curl_setopt($handler, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($handler, CURLOPT_POSTFIELDS, $json);
         curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
@@ -96,17 +91,11 @@ class EventStoreWriter implements EventStoreWriterInterface
             CURLOPT_HTTPHEADER,
             [
                 'Content-Type:application/vnd.eventstore.events+json',
-                'Content-Length: '.strlen($json),
+                'Content-Length: ' . strlen($json),
             ]
         );
 
-        $log = new EventLog();
-        $log->setEventType($eventType);
-        $log->setJson($json);
-        $log->setDate();
-
         $response = curl_exec($handler);
-
         if ($response === false) {
             $i = 1;
             while (curl_errno($handler) && $i < 5) {
@@ -114,27 +103,14 @@ class EventStoreWriter implements EventStoreWriterInterface
                 $i++;
             }
             $error = curl_error($handler);
-            $log->setError($error);
-            $this->logger->error(sprintf('Event could not be send to eventstore because: %s', $error));
-            $this->logger->error(sprintf('Event failed: %s', $json));
         }
 
-        $log->setResponse($response);
         curl_close($handler);
-        $this->doctrineManager->persist($log);
-        $this->doctrineManager->flush();
-    }
 
-    /**
-     * @param LoggerInterface $logger
-     *
-     * @return $this
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-
-        return $this;
+        $this->eventDispatcher->dispatch(
+            EventStoreEvents::WRITE_EVENT_COMPLETED,
+            new WriteEventCompleted($json, $eventType, $response, isset($error) ? $error : null)
+        );
     }
 
     /**
@@ -151,5 +127,15 @@ class EventStoreWriter implements EventStoreWriterInterface
         $event->data = $data;
 
         return json_encode([$event]);
+    }
+
+    /**
+     * @param string $stream
+     *
+     * @return string
+     */
+    private function getStreamUrl($stream)
+    {
+        return sprintf('%s/%s', trim($this->eventStoreHost, '/'), $stream);
     }
 }

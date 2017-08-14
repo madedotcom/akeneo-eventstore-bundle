@@ -1,6 +1,6 @@
 <?php
 
-namespace Made\Bundle\EventStoreBundle\Services;
+namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
 /**
  * Interface EventStoreWriterInterface
@@ -9,16 +9,19 @@ namespace Made\Bundle\EventStoreBundle\Services;
 interface EventStoreWriterInterface
 {
     /**
+     * @deprecated
+     *
      * @param string $stream
      * @return mixed
      */
-    public function useStream($stream = 'pim-notifications');
+    public function useStream($stream);
 
     /**
      * @param string $data
      * @param string $eventType
+     * @param null   $stream
+     *
      * @return mixed|void
-     * @throws \Exception
      */
-    public function writeEvent($data, $eventType);
+    public function writeEvent($data, $eventType, $stream = null);
 }

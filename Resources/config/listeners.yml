@@ -1,8 +1,0 @@
-services:
-    event_store_subscriber:
-        class: Made\Bundle\EventStoreBundle\EventSubscriber\NotifyEventStoreSubscriber
-        arguments:
-            - "@made_event_store_factory"
-            - '@made_event_store_product_repository'
-        tags:
-            - { name: kernel.event_subscriber }

@@ -23,6 +23,7 @@
 /app/bootstrap.php.cache
 /var/bootstrap.php.cache
 /bin/*
+/vendor
 !bin/console
 !bin/symfony_requirements
 
