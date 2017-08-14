@@ -6,7 +6,6 @@ services:
             - '@doctrine.orm.entity_manager'
         calls:
             - [setLogger, ['@monolog.logger.eventstore']]
-            - [setValidator,['@made_filters.validator']]
 
     made_event_store.event.factory:
         class: Made\Bundle\EventStoreBundle\Factory\EventStoreEventFactory
