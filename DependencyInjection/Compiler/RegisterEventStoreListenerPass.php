@@ -27,7 +27,7 @@ class RegisterEventStoreListenerPass implements CompilerPassInterface
             foreach ($tags as $tag) {
                 if (empty($tag['alias'])) {
                     throw new InvalidArgumentException(
-                        sprintf('Service %s requires an alias', $id)
+                        sprintf('Service %s requires an alias. This is used as the event name.', $id)
                     );
                 }
 

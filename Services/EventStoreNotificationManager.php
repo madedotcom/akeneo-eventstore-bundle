@@ -28,13 +28,13 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
 
     /**
      * @param NotifyEventStoreInterface $notifier
-     * @param string                    $alias
+     * @param string                    $eventName
      *
      * @return $this
      */
-    public function registerNotifier(NotifyEventStoreInterface $notifier, $alias)
+    public function registerNotifier(NotifyEventStoreInterface $notifier, $eventName)
     {
-        $this->notifiers[$alias] = $notifier;
+        $this->notifiers[$eventName] = $notifier;
 
         return $this;
     }
@@ -66,16 +66,18 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
     }
 
     /**
-     * @param string $alias
+     * Given an event name, it returns the notifier associated with it, null if none exists
+     *
+     * @param string $eventName
      *
      * @return NotifyEventStoreInterface|null
      */
-    private function fetchNotifier($alias)
+    private function fetchNotifier($eventName)
     {
-        if (array_key_exists($alias, $this->notifiers)
-            && $this->notifiers[$alias] instanceof NotifyEventStoreInterface
+        if (array_key_exists($eventName, $this->notifiers)
+            && $this->notifiers[$eventName] instanceof NotifyEventStoreInterface
         ) {
-            return $this->notifiers[$alias];
+            return $this->notifiers[$eventName];
         }
 
         return null;
