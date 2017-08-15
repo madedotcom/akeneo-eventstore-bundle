@@ -2,6 +2,7 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\DependencyInjection\Compiler;
 
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,6 +25,12 @@ class RegisterEventStoreListenerPass implements CompilerPassInterface
 
         foreach ($taggedServices as $id => $tags) {
             foreach ($tags as $tag) {
+                if (empty($tag['alias'])) {
+                    throw new InvalidArgumentException(
+                        sprintf('Service %s requires an alias', $id)
+                    );
+                }
+
                 $notificationManager->addMethodCall(
                     'addEventStoreListener',
                     [
