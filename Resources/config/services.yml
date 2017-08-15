@@ -1,5 +1,5 @@
 services:
-    made.event_store.notification_manager:
+    madedotcom.event_store.notification_manager:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventStoreNotificationManager
         arguments:
             - '@pim_versioning.manager.version'
