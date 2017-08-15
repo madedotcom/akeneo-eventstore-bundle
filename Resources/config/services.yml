@@ -4,10 +4,15 @@ services:
         class: Symfony\Component\DependencyInjection\ParameterBag\FrozenParameterBag
         factory: "service_container:getParameterBag"
 
+    madedotcom.event_store.event_name_resolver:
+        class: Madedotcom\Bundle\EventStoreBundle\Services\EventNameResolver
+        arguments:
+            - '@pim_versioning.manager.version'
+
     madedotcom.event_store.notification_manager:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventStoreNotificationManager
         arguments:
-            - '@pim_versioning.manager.version'
+            - '@madedotcom.event_store.event_name_resolver'
 
     madedotcom.event_store.schema_validator:
         class: Madedotcom\Bundle\EventStoreBundle\Services\SchemaValidator
