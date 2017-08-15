@@ -23,9 +23,6 @@ class EventStoreWriter implements EventStoreWriterInterface
     /** @var string */
     private $eventStoreHost;
 
-    /** @var string */
-    private $url;
-
     /**
      * @param SchemaValidatorInterface $validator
      * @param EventDispatcherInterface $eventDispatcher
@@ -42,45 +39,25 @@ class EventStoreWriter implements EventStoreWriterInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @param string $stream
-     *
-     * @return $this
-     */
-    public function useStream($stream)
-    {
-        $this->url = $this->getStreamUrl($stream);
-
-        return $this;
-    }
-
-    /**
      * @param mixed  $data
      * @param string $eventType
-     * @param null   $stream
+     * @param string $stream
      *
      * @return mixed|void
      * @throws \Exception
      */
-    public function writeEvent($data, $eventType, $stream = null)
+    public function writeEvent($data, $eventType, $stream)
     {
-        if (!$this->url && !$stream) {
-            throw new \Exception('Unable to find the stream where you what to write the event.');
-        }
-
         if (!$data) { // prevent sending empty events
             return;
         }
 
-        $url = $this->url ?: $this->getStreamUrl($stream);
         $json = $this->buildEvent($data, $eventType);
-
         if (!$this->validator->isValid($json, $eventType)) {
             return; # todo
         }
 
-        $handler = curl_init($url);
+        $handler = curl_init($this->getStreamUrl($stream));
         curl_setopt($handler, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($handler, CURLOPT_POSTFIELDS, $json);
         curl_setopt($handler, CURLOPT_RETURNTRANSFER, true);
