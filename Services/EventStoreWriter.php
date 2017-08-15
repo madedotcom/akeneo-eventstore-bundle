@@ -5,6 +5,7 @@ namespace Madedotcom\Bundle\EventStoreBundle\Services;
 use Madedotcom\Bundle\EventStoreBundle\Events\WriteEventCompleted;
 use Madedotcom\Bundle\EventStoreBundle\EventStoreEvents;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\DependencyInjection\ParameterBag\FrozenParameterBag;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -20,22 +21,22 @@ class EventStoreWriter implements EventStoreWriterInterface
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
 
-    /** @var string */
-    private $eventStoreHost;
+    /** @var FrozenParameterBag */
+    private $parameterBag;
 
     /**
      * @param SchemaValidatorInterface $validator
      * @param EventDispatcherInterface $eventDispatcher
-     * @param string                   $eventStoreHost
+     * @param FrozenParameterBag       $parameterBag
      */
     public function __construct(
         SchemaValidatorInterface $validator,
         EventDispatcherInterface $eventDispatcher,
-        $eventStoreHost
+        FrozenParameterBag $parameterBag
     ) {
         $this->validator = $validator;
         $this->eventDispatcher = $eventDispatcher;
-        $this->eventStoreHost = $eventStoreHost;
+        $this->parameterBag = $parameterBag;
     }
 
     /**
@@ -53,7 +54,7 @@ class EventStoreWriter implements EventStoreWriterInterface
         }
 
         $json = $this->buildEvent($data, $eventType);
-        if (!$this->validator->isValid($json, $eventType)) {
+        if ($this->parameterBag->get('data_validation_enabled') && !$this->validator->isValid($json, $eventType)) {
             return; # todo
         }
 
@@ -112,6 +113,6 @@ class EventStoreWriter implements EventStoreWriterInterface
      */
     private function getStreamUrl($stream)
     {
-        return sprintf('%s/%s', trim($this->eventStoreHost, '/'), $stream);
+        return sprintf('%s/%s', trim($this->parameterBag->get('eventstore_host'), '/'), $stream);
     }
 }

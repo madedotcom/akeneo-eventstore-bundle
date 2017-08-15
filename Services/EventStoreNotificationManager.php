@@ -3,6 +3,7 @@
 namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
 use Madedotcom\Bundle\EventStoreBundle\Notifiers\NotifyEventStoreInterface;
+use Madedotcom\Bundle\Helpers\Str;
 use Pim\Bundle\VersioningBundle\Manager\VersionManager;
 
 class EventStoreNotificationManager implements EventStoreNotificationManagerInterface
@@ -94,7 +95,7 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
 
         return sprintf(
             '%s_%s',
-            $this->transformUppercaseToUnderscore($className),
+            Str::snake($className),
             $this->calculateEventType($entity)
         );
     }
@@ -131,17 +132,5 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
     private function entityIsDeleted($entity)
     {
         return null === $entity->getId();
-    }
-
-    /**
-     * todo: does not belong in this class
-     *
-     * @param string $entityName
-     *
-     * @return string
-     */
-    private function transformUppercaseToUnderscore($entityName)
-    {
-        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $entityName));
     }
 }

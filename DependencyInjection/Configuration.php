@@ -23,7 +23,11 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('eventstore_host')
-                    ->defaultValue(null)
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                ->end()
+                ->booleanNode('data_validation_enabled')
+                    ->defaultTrue()
                 ->end()
             ->end()
         ;

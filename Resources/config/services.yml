@@ -1,4 +1,9 @@
 services:
+    madedotcom.parameters:
+        public: false
+        class: Symfony\Component\DependencyInjection\ParameterBag\FrozenParameterBag
+        factory: "service_container:getParameterBag"
+
     madedotcom.event_store.notification_manager:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventStoreNotificationManager
         arguments:
@@ -14,4 +19,4 @@ services:
         arguments:
             - '@madedotcom.event_store.schema_validator'
             - '@event_dispatcher'
-            - '%eventstore_host%'
+            - '@madedotcom.parameters'

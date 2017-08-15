@@ -2,6 +2,7 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\DependencyInjection;
 
+use Madedotcom\Bundle\Helpers\Arr;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -22,9 +23,29 @@ class MadedotcomEventStoreExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('eventstore_host', $config['eventstore_host']);
+        $this->configToParams($container, $config);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+    }
+
+    /**
+     * this flattens the configs and makes them parameters
+     * For example, the following bundle configuration:
+     * madedotcom_event_store:
+     *     eventstore_host: test
+     *     some_collection:
+     *         key1: val1
+     *         key2: val2
+     * will create the parameters "eventstore_host", "some_collection.key1" and "some_collection.key2"
+     *
+     * @param ContainerBuilder $container
+     * @param array            $config
+     */
+    private function configToParams(ContainerBuilder $container, array $config)
+    {
+        foreach (Arr::dot($config) as $key => $value) {
+            $container->setParameter($key, $value);
+        }
     }
 }
