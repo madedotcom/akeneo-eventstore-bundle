@@ -16,7 +16,7 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
     private $versionManager;
 
     /** @var array */
-    private $listeners = [];
+    private $notifiers = [];
 
     /**
      * @param VersionManager $versionManager
@@ -27,14 +27,14 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
     }
 
     /**
-     * @param NotifyEventStoreInterface $listener
+     * @param NotifyEventStoreInterface $notifier
      * @param string                    $alias
      *
      * @return $this
      */
-    public function addEventStoreListener(NotifyEventStoreInterface $listener, $alias)
+    public function registerNotifier(NotifyEventStoreInterface $notifier, $alias)
     {
-        $this->listeners[$alias] = $listener;
+        $this->notifiers[$alias] = $notifier;
 
         return $this;
     }
@@ -52,15 +52,15 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
             return false;
         }
 
-        $listener = $this->fetchListener(
+        $notifier = $this->fetchNotifier(
             $this->guessEventName($entity)
         );
 
-        if (!$listener) {
+        if (!$notifier) {
             return false;
         }
 
-        $listener->notify($entity);
+        $notifier->notify($entity);
 
         return true;
     }
@@ -70,12 +70,12 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
      *
      * @return NotifyEventStoreInterface|null
      */
-    private function fetchListener($alias)
+    private function fetchNotifier($alias)
     {
-        if (array_key_exists($alias, $this->listeners)
-            && $this->listeners[$alias] instanceof NotifyEventStoreInterface
+        if (array_key_exists($alias, $this->notifiers)
+            && $this->notifiers[$alias] instanceof NotifyEventStoreInterface
         ) {
-            return $this->listeners[$alias];
+            return $this->notifiers[$alias];
         }
 
         return null;

@@ -21,7 +21,7 @@ class RegisterEventStoreListenerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $notificationManager = $container->findDefinition('madedotcom.event_store.notification_manager');
-        $taggedServices = $container->findTaggedServiceIds('madedotcom_event_store.event_listener');
+        $taggedServices = $container->findTaggedServiceIds('madedotcom_event_store.notifier');
 
         foreach ($taggedServices as $id => $tags) {
             foreach ($tags as $tag) {
@@ -32,7 +32,7 @@ class RegisterEventStoreListenerPass implements CompilerPassInterface
                 }
 
                 $notificationManager->addMethodCall(
-                    'addEventStoreListener',
+                    'registerNotifier',
                     [
                         new Reference($id),
                         $tag['alias'],
