@@ -4,7 +4,6 @@ namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
 use Madedotcom\Bundle\EventStoreBundle\Events\WriteEventCompleted;
 use Madedotcom\Bundle\EventStoreBundle\EventStoreEvents;
-use Madedotcom\Bundle\EventStoreBundle\Services\SchemaValidator\SchemaValidatorInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 

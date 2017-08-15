@@ -1,6 +1,6 @@
 <?php
 
-namespace Madedotcom\Bundle\EventStoreBundle\Services\SchemaValidator;
+namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
 use HadesArchitect\JsonSchemaBundle\Exception\ViolationException;
 use HadesArchitect\JsonSchemaBundle\Validator\ValidatorServiceInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Madedotcom\Bundle\EventStoreBundle\Services\SchemaValidator;
+namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
 interface SchemaValidatorInterface
 {
