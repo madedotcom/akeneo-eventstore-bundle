@@ -1,6 +1,6 @@
 <?php
 
-namespace Madedotcom\Bundle\Helpers;
+namespace Madedotcom\Bundle\EventStoreBundle\Helpers;
 
 final class Arr
 {

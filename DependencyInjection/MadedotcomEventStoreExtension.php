@@ -2,7 +2,7 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\DependencyInjection;
 
-use Madedotcom\Bundle\Helpers\Arr;
+use Madedotcom\Bundle\EventStoreBundle\Helpers\Arr;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
