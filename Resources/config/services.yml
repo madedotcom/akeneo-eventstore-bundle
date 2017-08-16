@@ -14,14 +14,16 @@ services:
         arguments:
             - '@madedotcom.event_store.event_name_resolver'
 
-    madedotcom.event_store.schema_validator:
-        class: Madedotcom\Bundle\EventStoreBundle\Services\SchemaValidator
+    madedotcom.event_store.event_data_validator:
+        class: Madedotcom\Bundle\EventStoreBundle\Services\EventDataValidator
         arguments:
             - '@hades.json_schema.validator'
+            - '@event_dispatcher'
+            - '@madedotcom.parameters'
 
     madedotcom.event_store.writer:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventStoreWriter
         arguments:
-            - '@madedotcom.event_store.schema_validator'
+            - '@madedotcom.event_store.event_data_validator'
             - '@event_dispatcher'
             - '@madedotcom.parameters'

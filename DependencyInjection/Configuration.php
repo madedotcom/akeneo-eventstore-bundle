@@ -26,7 +26,7 @@ class Configuration implements ConfigurationInterface
                     ->isRequired()
                     ->cannotBeEmpty()
                 ->end()
-                ->booleanNode('data_validation_enabled')
+                ->booleanNode('soft_json_schema_validation')
                     ->defaultTrue()
                 ->end()
             ->end()

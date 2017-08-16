@@ -26,4 +26,27 @@ final class Arr
 
         return $results;
     }
+
+    /**
+     * Flatten a multi-dimensional array into a single level.
+     *
+     * @param  array $array
+     * @param  int   $depth
+     *
+     * @return array
+     */
+    public static function flatten($array, $depth = INF)
+    {
+        return array_reduce($array, function ($result, $item) use ($depth) {
+            if (!is_array($item)) {
+                return array_merge($result, [$item]);
+            }
+
+            if ($depth === 1) {
+                return array_merge($result, array_values($item));
+            }
+
+            return array_merge($result, static::flatten($item, $depth - 1));
+        }, []);
+    }
 }

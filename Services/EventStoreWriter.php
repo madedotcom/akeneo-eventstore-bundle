@@ -15,7 +15,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class EventStoreWriter implements EventStoreWriterInterface
 {
-    /** @var SchemaValidatorInterface */
+    /** @var EventDataValidatorInterface */
     private $validator;
 
     /** @var EventDispatcherInterface */
@@ -25,12 +25,12 @@ class EventStoreWriter implements EventStoreWriterInterface
     private $parameterBag;
 
     /**
-     * @param SchemaValidatorInterface $validator
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param FrozenParameterBag       $parameterBag
+     * @param EventDataValidatorInterface $validator
+     * @param EventDispatcherInterface    $eventDispatcher
+     * @param FrozenParameterBag          $parameterBag
      */
     public function __construct(
-        SchemaValidatorInterface $validator,
+        EventDataValidatorInterface $validator,
         EventDispatcherInterface $eventDispatcher,
         FrozenParameterBag $parameterBag
     ) {
@@ -54,8 +54,9 @@ class EventStoreWriter implements EventStoreWriterInterface
         }
 
         $json = $this->buildEvent($data, $eventType);
-        if ($this->parameterBag->get('data_validation_enabled') && !$this->validator->isValid($json, $eventType)) {
-            return; # todo
+        $errors = $this->validator->validate($data, $eventType);
+        if (count($errors)) {
+            return false; # todo: do something with there errors
         }
 
         $handler = curl_init($this->getStreamUrl($stream));
