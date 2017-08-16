@@ -92,7 +92,7 @@ final class EventDataValidator implements EventDataValidatorInterface
     private function validateSchema(array $data, ValidatorInterface $validator)
     {
         $schema = json_decode($validator->getJsonSchema());
-        if ($this->schemaValidator->isValid($data, $schema)) {
+        if (empty($schema) || $this->schemaValidator->isValid($data, $schema)) {
             return [];
         }
 

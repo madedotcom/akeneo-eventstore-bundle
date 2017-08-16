@@ -59,7 +59,7 @@ class EventStoreWriter implements EventStoreWriterInterface
         if (count($errors)) {
             $this->eventDispatcher->dispatch(
                 EventStoreEvents::VALIDATION_FAILED,
-                new ValidationFailed($json, $errors)
+                new ValidationFailed($json, $eventType, $errors)
             );
 
             return false;
@@ -85,7 +85,7 @@ class EventStoreWriter implements EventStoreWriterInterface
 
         $this->eventDispatcher->dispatch(
             EventStoreEvents::WRITE_EVENT_COMPLETED,
-            new WriteEventCompleted($json, $response, empty($error) ? null : $error)
+            new WriteEventCompleted($json, $eventType, $response, empty($error) ? null : $error)
         );
 
         return empty($error) ? true : false;
