@@ -2,6 +2,7 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
+use Madedotcom\Bundle\EventStoreBundle\Events\ValidationFailed;
 use Madedotcom\Bundle\EventStoreBundle\Events\WriteEventCompleted;
 use Madedotcom\Bundle\EventStoreBundle\EventStoreEvents;
 use Ramsey\Uuid\Uuid;
@@ -44,19 +45,24 @@ class EventStoreWriter implements EventStoreWriterInterface
      * @param string $eventType
      * @param string $stream
      *
-     * @return mixed|void
+     * @return bool
      * @throws \Exception
      */
     public function writeEvent($data, $eventType, $stream)
     {
         if (!$data) { // prevent sending empty events
-            return;
+            return false;
         }
 
         $json = $this->buildEvent($data, $eventType);
         $errors = $this->validator->validate($data, $eventType);
         if (count($errors)) {
-            return false; # todo: do something with there errors
+            $this->eventDispatcher->dispatch(
+                EventStoreEvents::VALIDATION_FAILED,
+                new ValidationFailed($json, $errors)
+            );
+
+            return false;
         }
 
         $handler = curl_init($this->getStreamUrl($stream));
@@ -74,21 +80,15 @@ class EventStoreWriter implements EventStoreWriterInterface
         );
 
         $response = curl_exec($handler);
-        if ($response === false) {
-            $i = 1;
-            while (curl_errno($handler) && $i < 5) {
-                $response = curl_exec($handler);
-                $i++;
-            }
-            $error = curl_error($handler);
-        }
-
+        $error = curl_error($handler);
         curl_close($handler);
 
         $this->eventDispatcher->dispatch(
             EventStoreEvents::WRITE_EVENT_COMPLETED,
-            new WriteEventCompleted($json, $eventType, $response, isset($error) ? $error : null)
+            new WriteEventCompleted($json, $response, empty($error) ? null : $error)
         );
+
+        return empty($error) ? true : false;
     }
 
     /**
