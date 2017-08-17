@@ -84,15 +84,15 @@ final class EventDataValidator implements EventDataValidatorInterface
     }
 
     /**
-     * @param array              $data
+     * @param array | object     $data
      * @param ValidatorInterface $validator
      *
      * @return array|\HadesArchitect\JsonSchemaBundle\Error\ErrorInterface[]
      */
-    private function validateSchema(array $data, ValidatorInterface $validator)
+    private function validateSchema($data, ValidatorInterface $validator)
     {
         $schema = json_decode($validator->getJsonSchema());
-        if (empty($schema) || $this->schemaValidator->isValid($data, $schema)) {
+        if (empty($schema) || $this->schemaValidator->isValid((object)$data, $schema)) {
             return [];
         }
 
@@ -100,12 +100,12 @@ final class EventDataValidator implements EventDataValidatorInterface
     }
 
     /**
-     * @param array              $data
+     * @param array | object     $data
      * @param ValidatorInterface $validator
      *
      * @return array|\HadesArchitect\JsonSchemaBundle\Error\ErrorInterface[]
      */
-    private function validateContent(array $data, ValidatorInterface $validator)
+    private function validateContent($data, ValidatorInterface $validator)
     {
         $errors = $validator->validateContent($data);
         if (!is_array($errors)) {
@@ -148,7 +148,7 @@ final class EventDataValidator implements EventDataValidatorInterface
         foreach ($errors as $error) {
             $result[] = [
                 'property' => $error->getProperty(),
-                'message' => $error->getViolation(),
+                'message'  => $error->getViolation(),
             ];
         }
 
