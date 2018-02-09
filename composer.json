@@ -5,8 +5,8 @@
     "keywords": ["Madedotcom", "EventStore"],
     "license": "MIT",
     "require": {
-        "php": ">=5.6",
-        "akeneo/pim-community-dev": "^1.6",
+        "php": "^7.1",
+        "akeneo/pim-community-dev": "^2.0",
         "ramsey/uuid": "*",
         "hadesarchitect/json-schema-bundle": "*"
     },
