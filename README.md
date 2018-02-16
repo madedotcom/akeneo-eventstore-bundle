@@ -26,7 +26,7 @@ You can install and use this bundle only together with:
 
 ##### Require the bundle with composer
 ```bash
-composer require "madedotcom/eventstore-bundle"
+composer require "madedotcom/eventstore-bundle:v2.0"
 ```
 
 ##### Include in AppKernel.php
