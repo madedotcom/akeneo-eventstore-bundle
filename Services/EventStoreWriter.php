@@ -78,6 +78,11 @@ class EventStoreWriter implements EventStoreWriterInterface
                 'Content-Length: ' . strlen($json),
             ]
         );
+        curl_setopt(
+            $handler,
+            CURLOPT_USERPWD,
+            $this->parameterBag->get('eventstore_user') . ":" . $this->parameterBag->get('eventstore_password')
+        );
 
         $response = curl_exec($handler);
         $error = curl_error($handler);
