@@ -46,6 +46,8 @@ madedotcom_event_store:
 
 ```yml
 eventstore_host: http://pim-eventstore:2113/streams/
+eventstore_user: service-pim2
+eventstore_password: changethisnotsecurepassword
 ```
 
 ### How to configure Event Store streams?
