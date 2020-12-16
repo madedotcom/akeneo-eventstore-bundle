@@ -3,7 +3,7 @@
 namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
 use Madedotcom\Bundle\EventStoreBundle\Helpers\Str;
-use Pim\Bundle\VersioningBundle\Manager\VersionManager;
+use Akeneo\Tool\Bundle\VersioningBundle\Manager\VersionManager;
 
 class EventNameResolver implements EventNameResolverInterface
 {

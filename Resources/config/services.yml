@@ -24,6 +24,5 @@ services:
     madedotcom.event_store.writer:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventStoreWriter
         arguments:
-            - '@madedotcom.event_store.event_data_validator'
             - '@event_dispatcher'
             - '@madedotcom.parameters'

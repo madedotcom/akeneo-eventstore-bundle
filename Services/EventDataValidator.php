@@ -2,9 +2,7 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
-use HadesArchitect\JsonSchemaBundle\Error\Error;
-use HadesArchitect\JsonSchemaBundle\Error\ErrorInterface;
-use HadesArchitect\JsonSchemaBundle\Validator\ValidatorServiceInterface;
+use JsonSchema\Validator;
 use Madedotcom\Bundle\EventStoreBundle\Events\JsonSchemaValidationFailed;
 use Madedotcom\Bundle\EventStoreBundle\EventStoreEvents;
 use Madedotcom\Bundle\EventStoreBundle\Validators\DummyValidator;
@@ -14,7 +12,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 final class EventDataValidator implements EventDataValidatorInterface
 {
-    /** @var ValidatorServiceInterface */
+    /** @var Validator */
     private $schemaValidator;
 
     /** @var EventDispatcherInterface */
@@ -27,11 +25,11 @@ final class EventDataValidator implements EventDataValidatorInterface
     private $validators = [];
 
     public function __construct(
-        ValidatorServiceInterface $schemaValidator,
         EventDispatcherInterface $eventDispatcher,
         FrozenParameterBag $parameterBag
     ) {
-        $this->schemaValidator = $schemaValidator;
+        // TODO DAB_dev: fix this
+        $this->schemaValidator = new Validator();
         $this->eventDispatcher = $eventDispatcher;
         $this->parameterBag = $parameterBag;
     }
@@ -72,7 +70,7 @@ final class EventDataValidator implements EventDataValidatorInterface
                     new JsonSchemaValidationFailed(
                         $data,
                         $eventType,
-                        $this->errorsToArray($errors['schema'])
+                        $errors['schema']
                     )
                 );
             } else {
@@ -87,23 +85,23 @@ final class EventDataValidator implements EventDataValidatorInterface
      * @param array | object     $data
      * @param ValidatorInterface $validator
      *
-     * @return array|\HadesArchitect\JsonSchemaBundle\Error\ErrorInterface[]
+     * @return array
      */
     private function validateSchema($data, ValidatorInterface $validator)
     {
         $schema = json_decode($validator->getJsonSchema());
-        if (empty($schema) || $this->schemaValidator->isValid((object)$data, $schema)) {
+        if (empty($schema) || $this->schemaValidator->check((object)$data, $schema)) {
             return [];
         }
 
-        return $this->schemaValidator->getErrors();
+        return $this->errorsToArray($this->schemaValidator->getErrors());
     }
 
     /**
      * @param array | object     $data
      * @param ValidatorInterface $validator
      *
-     * @return array|\HadesArchitect\JsonSchemaBundle\Error\ErrorInterface[]
+     * @return array
      */
     private function validateContent($data, ValidatorInterface $validator)
     {
@@ -112,12 +110,7 @@ final class EventDataValidator implements EventDataValidatorInterface
             return [];
         }
 
-        return array_map(
-            function ($error) {
-                return new Error($error['property'], $error['message']);
-            },
-            $errors
-        );
+        return $this->errorsToArray($errors);
     }
 
     /**
@@ -144,11 +137,10 @@ final class EventDataValidator implements EventDataValidatorInterface
     private function errorsToArray(array $errors)
     {
         $result = [];
-        /** @var ErrorInterface $error */
         foreach ($errors as $error) {
             $result[] = [
-                'property' => $error->getProperty(),
-                'message'  => $error->getViolation(),
+                'property' => $error['property'],
+                'message'  => $error['message'],
             ];
         }
 
