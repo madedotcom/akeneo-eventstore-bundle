@@ -81,7 +81,7 @@ class EventStoreWriter implements EventStoreWriterInterface
         curl_setopt(
             $handler,
             CURLOPT_USERPWD,
-            $this->parameterBag->get('eventstore_user') . ":" . $this->parameterBag->get('eventstore_password')
+            getenv('EVENTSTORE_USER') . ":" . getenv('EVENTSTORE_PASSWORD')
         );
 
         $response = curl_exec($handler);
