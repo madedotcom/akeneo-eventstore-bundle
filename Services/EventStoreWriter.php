@@ -119,6 +119,6 @@ class EventStoreWriter implements EventStoreWriterInterface
      */
     private function getStreamUrl($stream)
     {
-        return sprintf('%s/%s', trim($this->parameterBag->get('eventstore_host'), '/'), $stream);
+        return sprintf('%s/%s', trim(getenv('EVENTSTORE_HOST'), '/'), $stream);
     }
 }
