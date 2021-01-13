@@ -13,16 +13,17 @@ services:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventStoreNotificationManager
         arguments:
             - '@madedotcom.event_store.event_name_resolver'
+                public: true
 
     madedotcom.event_store.event_data_validator:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventDataValidator
         arguments:
-            - '@hades.json_schema.validator'
             - '@event_dispatcher'
             - '@madedotcom.parameters'
 
     madedotcom.event_store.writer:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventStoreWriter
         arguments:
+            - '@madedotcom.event_store.event_data_validator'
             - '@event_dispatcher'
             - '@madedotcom.parameters'
