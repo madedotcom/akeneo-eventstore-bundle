@@ -29,25 +29,25 @@ You can install and use this bundle only together with:
 composer require "madedotcom/eventstore-bundle"
 ```
 
-##### Include in AppKernel.php
+##### Include in bundles.php
 ```php
-$bundles = [ 
-    new Madedotcom\Bundle\EventStoreBundle\EventStoreBundle(), 
+return [ 
+    Madedotcom\Bundle\EventStoreBundle\MadedotcomEventStoreBundle::class => ['all' => true], 
 ];
 ```
 
-##### Update config.yml
+##### Update packages/parameters.yml
 ```yml
 madedotcom_event_store:
-    eventstore_host: "%eventstore_host%"
+  eventstore_host: '%env(EVENTSTORE_HOST)%'
 ```
 
-### Update parameters.yml
+### Update .env
 
-```yml
-eventstore_host: http://pim-eventstore:2113/streams/
-eventstore_user: service-pim2
-eventstore_password: changethisnotsecurepassword
+```dotenv
+EVENTSTORE_HOST=http://pim-eventstore:2113/streams/
+EVENTSTORE_USER="service-pim4"
+EVENTSTORE_PASSWORD="changethisnotsecurepassword"
 ```
 
 ### How to configure Event Store streams?
