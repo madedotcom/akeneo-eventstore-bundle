@@ -10,10 +10,10 @@ services:
             - '@pim_versioning.manager.version'
 
     madedotcom.event_store.notification_manager:
+        public: true
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventStoreNotificationManager
         arguments:
             - '@madedotcom.event_store.event_name_resolver'
-            public: true
 
     madedotcom.event_store.event_data_validator:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventDataValidator
