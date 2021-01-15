@@ -66,7 +66,6 @@ final class EventDataValidator implements EventDataValidatorInterface
         if (count($errors['schema'])) {
             if ($this->parameterBag->get('soft_json_schema_validation')) {
                 $this->eventDispatcher->dispatch(
-                    EventStoreEvents::JSON_SCHEMA_VALIDATION_FAILED,
                     new JsonSchemaValidationFailed(
                         $data,
                         $eventType,

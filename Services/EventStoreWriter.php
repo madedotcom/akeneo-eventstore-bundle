@@ -58,13 +58,11 @@ class EventStoreWriter implements EventStoreWriterInterface
         $errors = $this->validator->validate($data, $eventType);
         if (count($errors)) {
             $this->eventDispatcher->dispatch(
-                EventStoreEvents::VALIDATION_FAILED,
                 new ValidationFailed($json, $eventType, $errors)
             );
 
             return false;
         }
-
         $handler = curl_init($this->getStreamUrl($stream));
         curl_setopt($handler, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($handler, CURLOPT_POSTFIELDS, $json);
@@ -89,7 +87,6 @@ class EventStoreWriter implements EventStoreWriterInterface
         curl_close($handler);
 
         $this->eventDispatcher->dispatch(
-            EventStoreEvents::WRITE_EVENT_COMPLETED,
             new WriteEventCompleted($json, $eventType, $response, empty($error) ? null : $error)
         );
 
