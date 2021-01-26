@@ -2,24 +2,17 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
+use Made\Bundle\EventStoreBundle\Entity\EventStoreNotification;
 use Madedotcom\Bundle\EventStoreBundle\Notifiers\NotifyEventStoreInterface;
 
 interface EventStoreNotificationManagerInterface
 {
-    /**
-     * @param NotifyEventStoreInterface $notifier
-     * @param string                    $alias
-     *
-     * @return $this
-     */
-    public function registerNotifier(NotifyEventStoreInterface $notifier, $alias);
+    public function registerNotifier(NotifyEventStoreInterface $notifier, string $alias);
 
     /**
      * Create event type function will create and return an instance of EventStoreEvent class.
      *
-     * @param Entity $entity
-     *
      * @return NotifyEventStoreInterface|null
      */
-    public function notify($entity);
+    public function notify($entity, EventStoreNotification $notification);
 }
