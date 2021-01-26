@@ -2,8 +2,11 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
+use Made\Bundle\EventStoreBundle\Entity\EventStoreNotification;
 use Madedotcom\Bundle\EventStoreBundle\Helpers\Str;
 use Akeneo\Tool\Bundle\VersioningBundle\Manager\VersionManager;
+use Akeneo\AssetManager\Domain\Model\Asset\Asset;
+
 
 class EventNameResolver implements EventNameResolverInterface
 {
@@ -22,21 +25,16 @@ class EventNameResolver implements EventNameResolverInterface
         $this->versionManager = $versionManager;
     }
 
-    /**
-     * @param Entity $entity
-     *
-     * @return bool
-     */
-    public function resolve($entity)
+    public function resolve($entity, EventStoreNotification $notification): string
     {
-        if (!$this->isEntityVersionable($entity)) {
-            return;
+        if (!($entity instanceof Asset) && !$this->isEntityVersionable($entity)) {
+            return '';
         }
 
-        return $this->guessEventName($entity);
+        return $this->guessEventName($entity, $notification);
     }
 
-    private function isEntityVersionable($entity)
+    private function isEntityVersionable($entity): bool
     {
         if (!$this->versionManager->getNewestLogEntry($entity) && !$this->entityIsDeleted($entity)) {
             return false;
@@ -47,12 +45,8 @@ class EventNameResolver implements EventNameResolverInterface
 
     /**
      * Returns an event name for the given entity, eg: attribute_updated, product_created, family_deleted
-     *
-     * @param $entity
-     *
-     * @return string
      */
-    private function guessEventName($entity)
+    private function guessEventName($entity, EventStoreNotification $notification): string
     {
         $object = explode('\\', get_class($entity));
         $className = array_pop($object);
@@ -60,17 +54,19 @@ class EventNameResolver implements EventNameResolverInterface
         return sprintf(
             '%s_%s',
             Str::snake($className),
-            $this->calculateEventType($entity)
+            $this->calculateEventType($entity, $notification)
         );
     }
 
-    /**
-     * @param Entity $entity
-     *
-     * @return string
-     */
-    private function calculateEventType($entity)
+    private function calculateEventType($entity, EventStoreNotification $notification): string
     {
+        if ($entity instanceof Asset) {
+            if ($notification->getType() === EventStoreNotification::EVENT_TYPE_ASSET_CREATED) {
+                return static::EVENT_CREATED;
+            }
+            return static::EVENT_UPDATED;
+        }
+
         if ($this->entityIsDeleted($entity)) {
             return static::EVENT_DELETED;
         }
@@ -87,13 +83,9 @@ class EventNameResolver implements EventNameResolverInterface
     }
 
     /**
-     * todo: does this really work? what happens when entity is created??? maybe use entitymanager to check if entity is managed instead?
-     *
-     * @param Entity $entity
-     *
-     * @return bool
+     * @TODO: does this really work? what happens when entity is created??? maybe use entitymanager to check if entity is managed instead?
      */
-    private function entityIsDeleted($entity)
+    private function entityIsDeleted($entity): bool
     {
         return null === $entity->getId();
     }

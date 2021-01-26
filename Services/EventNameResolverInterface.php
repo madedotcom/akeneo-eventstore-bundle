@@ -2,12 +2,9 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
+use Made\Bundle\EventStoreBundle\Entity\EventStoreNotification;
+
 interface EventNameResolverInterface
 {
-    /**
-     * @param object $entity
-     *
-     * @return string|null
-     */
-    public function resolve($entity);
+    public function resolve($entity, EventStoreNotification $notification): string;
 }

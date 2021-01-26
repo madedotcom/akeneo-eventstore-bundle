@@ -2,6 +2,7 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
+use Made\Bundle\EventStoreBundle\Entity\EventStoreNotification;
 use Madedotcom\Bundle\EventStoreBundle\Notifiers\NotifyEventStoreInterface;
 
 class EventStoreNotificationManager implements EventStoreNotificationManagerInterface
@@ -35,19 +36,17 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
 
     /**
      * Calls the appropriate notifier based on the entity event (eg: created, updated or deleted).
-     *
-     * @param Entity $entity
-     *
-     * @return bool
      */
-    public function notify($entity)
+    public function notify($entity, EventStoreNotification $notification): bool
     {
-        $eventName = $this->eventNameResolver->resolve($entity);
+        $eventName = $this->eventNameResolver->resolve($entity, $notification);
+
         if (!$eventName) {
             return false;
         }
 
         $notifier = $this->fetchNotifier($eventName);
+
         if (!$notifier) {
             return false;
         }
