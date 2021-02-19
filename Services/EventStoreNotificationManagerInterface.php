@@ -2,7 +2,6 @@
 
 namespace Madedotcom\Bundle\EventStoreBundle\Services;
 
-use Made\Bundle\EventStoreBundle\Entity\EventStoreNotification;
 use Madedotcom\Bundle\EventStoreBundle\Notifiers\NotifyEventStoreInterface;
 
 interface EventStoreNotificationManagerInterface
@@ -14,5 +13,5 @@ interface EventStoreNotificationManagerInterface
      *
      * @return NotifyEventStoreInterface|null
      */
-    public function notify($entity, EventStoreNotification $notification);
+    public function notify($entity);
 }

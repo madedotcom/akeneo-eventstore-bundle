@@ -37,7 +37,7 @@ class EventStoreNotificationManager implements EventStoreNotificationManagerInte
     /**
      * Calls the appropriate notifier based on the entity event (eg: created, updated or deleted).
      */
-    public function notify($entity, EventStoreNotification $notification): bool
+    public function notify($entity, EventStoreNotification $notification = null): bool
     {
         $eventName = $this->eventNameResolver->resolve($entity, $notification);
 
