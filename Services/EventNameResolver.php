@@ -62,8 +62,8 @@ class EventNameResolver implements EventNameResolverInterface
     {
         if ($entity instanceof Asset) {
             if (
-                (null !== $notification) &&
-                ($notification->getType() === EventStoreNotification::EVENT_TYPE_ASSET_CREATED)
+                (null !== $notification)
+                && ($notification->getType() === EventStoreNotification::EVENT_TYPE_ASSET_CREATED)
             ) {
                 return static::EVENT_CREATED;
             }
