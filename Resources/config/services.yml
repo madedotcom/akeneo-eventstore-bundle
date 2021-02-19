@@ -4,6 +4,10 @@ services:
         class: Symfony\Component\DependencyInjection\ParameterBag\FrozenParameterBag
         factory: "service_container:getParameterBag"
 
+    json_schema_validator:
+        public: true
+        class: JsonSchema\Validator
+
     madedotcom.event_store.event_name_resolver:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventNameResolver
         arguments:
@@ -18,6 +22,7 @@ services:
     madedotcom.event_store.event_data_validator:
         class: Madedotcom\Bundle\EventStoreBundle\Services\EventDataValidator
         arguments:
+            - '@json_schema_validator'
             - '@event_dispatcher'
             - '@madedotcom.parameters'
 
