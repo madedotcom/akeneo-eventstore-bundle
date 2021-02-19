@@ -25,11 +25,11 @@ final class EventDataValidator implements EventDataValidatorInterface
     private $validators = [];
 
     public function __construct(
+        Validator $schemaValidator,
         EventDispatcherInterface $eventDispatcher,
         FrozenParameterBag $parameterBag
     ) {
-        // TODO DAB_dev: fix this
-        $this->schemaValidator = new Validator();
+        $this->schemaValidator = $schemaValidator;
         $this->eventDispatcher = $eventDispatcher;
         $this->parameterBag = $parameterBag;
     }
