@@ -25,7 +25,7 @@ class EventNameResolver implements EventNameResolverInterface
         $this->versionManager = $versionManager;
     }
 
-    public function resolve($entity, EventStoreNotification $notification): string
+    public function resolve($entity, EventStoreNotification $notification = null): string
     {
         if (!($entity instanceof Asset) && !$this->isEntityVersionable($entity)) {
             return '';
@@ -46,7 +46,7 @@ class EventNameResolver implements EventNameResolverInterface
     /**
      * Returns an event name for the given entity, eg: attribute_updated, product_created, family_deleted
      */
-    private function guessEventName($entity, EventStoreNotification $notification): string
+    private function guessEventName($entity, EventStoreNotification $notification = null): string
     {
         $object = explode('\\', get_class($entity));
         $className = array_pop($object);
@@ -58,10 +58,12 @@ class EventNameResolver implements EventNameResolverInterface
         );
     }
 
-    private function calculateEventType($entity, EventStoreNotification $notification): string
+    private function calculateEventType($entity, EventStoreNotification $notification = null): string
     {
         if ($entity instanceof Asset) {
-            if ($notification->getType() === EventStoreNotification::EVENT_TYPE_ASSET_CREATED) {
+            if ((null !== $notification) &&
+                ($notification->getType() === EventStoreNotification::EVENT_TYPE_ASSET_CREATED)
+            ) {
                 return static::EVENT_CREATED;
             }
             return static::EVENT_UPDATED;
